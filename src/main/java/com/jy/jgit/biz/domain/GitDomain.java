@@ -12,40 +12,40 @@ import java.io.File;
 @Data
 public class GitDomain {
 
-    private String username;
-    private String userToken;
-    private String dirPath;
+	private String username;
+	private String userToken;
+	private String dirPath;
 
-    private String repoName;
-    private String branchName;
+	private String repoName;
+	private String branchName;
 
-    private CredentialsProvider credentialsProvider;
+	private CredentialsProvider credentialsProvider;
 
-    @Builder
-    public GitDomain(String username, String userToken, String dirPath, String repoName, String branchName) {
-        this.username = username;
-        this.userToken = userToken;
-        this.dirPath = dirPath;
-        this.repoName = repoName;
-        this.branchName = branchName;
-        this.credentialsProvider = new UsernamePasswordCredentialsProvider(username, userToken);    // set CredentialsProvider
-    }
+	@Builder
+	public GitDomain(String username, String userToken, String dirPath, String repoName, String branchName) {
+		this.username = username;
+		this.userToken = userToken;
+		this.dirPath = dirPath;
+		this.repoName = repoName;
+		this.branchName = branchName;
+		this.credentialsProvider = new UsernamePasswordCredentialsProvider(username, userToken);    // set CredentialsProvider
+	}
 
-    // dirPath 에 존재하는 File 객체 Return
-    public File getLocalRepoFile() {
-        return new File(dirPath);
-    }
+	// dirPath 에 존재하는 File 객체 Return
+	public File getLocalRepoFile() {
+		return new File(dirPath);
+	}
 
-    // git push method
-    public void push() {
-        try (Git git = Git.open(getLocalRepoFile())) {
-            git.push()
-                    .setCredentialsProvider(credentialsProvider)
-                    .setRemote(repoName)
-                    .setRefSpecs(new RefSpec(branchName))
-                    .call();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
+	// git push method
+	public void push() {
+		try (Git git = Git.open(getLocalRepoFile())) {
+			git.push()
+					.setCredentialsProvider(credentialsProvider)
+					.setRemote(repoName)
+					.setRefSpecs(new RefSpec(branchName))
+					.call();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
 }
