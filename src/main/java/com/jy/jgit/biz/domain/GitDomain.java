@@ -3,11 +3,14 @@ package com.jy.jgit.biz.domain;
 import lombok.Builder;
 import lombok.Data;
 import org.eclipse.jgit.api.Git;
+import org.eclipse.jgit.revwalk.RevCommit;
 import org.eclipse.jgit.transport.CredentialsProvider;
 import org.eclipse.jgit.transport.RefSpec;
 import org.eclipse.jgit.transport.UsernamePasswordCredentialsProvider;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 
 @Data
 public class GitDomain {
@@ -47,5 +50,17 @@ public class GitDomain {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+	}
+
+	// List all commits in a repository
+	public List<RevCommit> getCommitList() {
+		List<RevCommit> list = new ArrayList<>();
+		try (Git git = Git.open(getLocalRepoFile())) {
+			Iterable<RevCommit> revCommits = git.log().all().call();
+			revCommits.iterator().forEachRemaining(list::add);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return list;
 	}
 }
