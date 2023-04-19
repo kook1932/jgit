@@ -53,10 +53,25 @@ public class GitDomain {
 	}
 
 	// List all commits in a repository
-	public List<RevCommit> getCommitList() {
+	public List<RevCommit> getLocalCommitList() {
 		List<RevCommit> list = new ArrayList<>();
 		try (Git git = Git.open(getLocalRepoFile())) {
-			Iterable<RevCommit> revCommits = git.log().all().call();
+			Iterable<RevCommit> revCommits = git.log()
+					.add(git.getRepository().resolve("master"))
+					.call();
+			revCommits.iterator().forEachRemaining(list::add);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return list;
+	}
+
+	public List<RevCommit> getRemotesCommitList() {
+		List<RevCommit> list = new ArrayList<>();
+		try (Git git = Git.open(getLocalRepoFile())) {
+			Iterable<RevCommit> revCommits = git.log()
+					.add(git.getRepository().resolve("remotes/origin/master"))
+					.call();
 			revCommits.iterator().forEachRemaining(list::add);
 		} catch (Exception e) {
 			e.printStackTrace();

@@ -6,8 +6,6 @@ import org.junit.jupiter.api.Test;
 
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 class GitDomainTest {
 
 	@DisplayName("Git Push Test")
@@ -24,9 +22,9 @@ class GitDomainTest {
 		git.push();
 	}
 
-	@DisplayName("List all commits in a repository")
+	@DisplayName("List local commits in a repository")
 	@Test
-	void getList() {
+	void getLocalCommitList() {
 		GitDomain git = GitDomain.builder()
 				.username("kook1932")
 				.userToken("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")
@@ -35,7 +33,22 @@ class GitDomainTest {
 				.branchName("master")
 				.build();
 
-		List<RevCommit> commitList = git.getCommitList();
+		List<RevCommit> commitList = git.getLocalCommitList();
+		commitList.forEach(c -> System.out.println("commit : " + c));
+	}
+
+	@DisplayName("List Remotes commits in a repository")
+	@Test
+	void getRemotesCommitList() {
+		GitDomain git = GitDomain.builder()
+				.username("kook1932")
+				.userToken("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")
+				.dirPath("C:\\Projects\\jgit")
+				.repoName("origin")
+				.branchName("master")
+				.build();
+
+		List<RevCommit> commitList = git.getRemotesCommitList();
 		commitList.forEach(c -> System.out.println("commit : " + c));
 	}
 
