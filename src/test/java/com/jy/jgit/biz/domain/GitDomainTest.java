@@ -35,6 +35,7 @@ class GitDomainTest {
 
 		List<RevCommit> commitList = git.getLocalCommitList();
 		commitList.forEach(c -> System.out.println("commit : " + c));
+		System.out.println("localCommit count = " + commitList.size());
 	}
 
 	@DisplayName("List Remotes commits in a repository")
@@ -50,6 +51,7 @@ class GitDomainTest {
 
 		List<RevCommit> commitList = git.getRemotesCommitList();
 		commitList.forEach(c -> System.out.println("commit : " + c));
+		System.out.println("remotesCommit count = " + commitList.size());
 	}
 
 }
