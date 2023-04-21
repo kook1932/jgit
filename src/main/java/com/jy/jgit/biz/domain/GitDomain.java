@@ -78,4 +78,17 @@ public class GitDomain {
 		}
 		return list;
 	}
+
+	public boolean isPossibleToPush() {
+		return getLocalCommitList().size() - getRemotesCommitList().size() > 0;
+	}
+
+	public void checkoutRemoteBranchInNewBranch() {
+		try (Git git = Git.open(getLocalRepoFile())) {
+			git.getRepository().resolve("remotes/origin/master");
+			git.checkout().setCreateBranch(true).setName("cherry-branch").call();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
 }

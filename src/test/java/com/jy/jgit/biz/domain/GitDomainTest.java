@@ -54,4 +54,18 @@ class GitDomainTest {
 		System.out.println("remotesCommit count = " + commitList.size());
 	}
 
+	@DisplayName("git checkout -b cherry-branch origin/master")
+	@Test
+	void checkoutRemoteBranchInNewBranchTest() {
+		GitDomain git = GitDomain.builder()
+				.username("kook1932")
+				.userToken("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")
+				.dirPath("C:\\Users\\jeongyong.han\\project\\jgit")
+				.repoName("origin")
+				.branchName("master")
+				.build();
+
+		git.checkoutRemoteBranchInNewBranch();
+	}
+
 }
