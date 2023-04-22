@@ -91,4 +91,11 @@ public class GitDomain {
 			e.printStackTrace();
 		}
 	}
+
+	public void reservation() {
+		if (isPossibleToPush()) {
+			List<RevCommit> noPushCommits = getLocalCommitList().subList(getRemotesCommitList().size(), getLocalCommitList().size());
+			noPushCommits.forEach(c -> System.out.println(" = " + c.toString()));
+		}
+	}
 }

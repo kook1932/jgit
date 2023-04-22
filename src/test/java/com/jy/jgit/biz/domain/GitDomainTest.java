@@ -68,4 +68,18 @@ class GitDomainTest {
 		git.checkoutRemoteBranchInNewBranch();
 	}
 
+	@DisplayName("show no push Commits")
+	@Test
+	void reservationTest() {
+		GitDomain git = GitDomain.builder()
+				.username("kook1932")
+				.userToken("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")
+				.dirPath("C:\\Projects\\jgit")
+				.repoName("origin")
+				.branchName("master")
+				.build();
+
+		git.reservation();
+	}
+
 }
