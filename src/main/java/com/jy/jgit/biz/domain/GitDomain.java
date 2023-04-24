@@ -11,6 +11,8 @@ import org.eclipse.jgit.transport.RefSpec;
 import org.eclipse.jgit.transport.UsernamePasswordCredentialsProvider;
 
 import java.io.File;
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -95,7 +97,7 @@ public class GitDomain {
 		}
 	}
 
-	public void reservation() {
+	public void reservation(LocalDateTime dateTime) {
 		try (Git git = Git.open(getLocalRepoFile())) {
 			if (isPossibleToPush()) {
 				List<RevCommit> localCommitList = getLocalCommitList();
@@ -106,7 +108,7 @@ public class GitDomain {
 					PersonIdent authorIdent = revCommit.getAuthorIdent();
 					PersonIdent committerIdent = revCommit.getCommitterIdent();
 					String fullMessage = revCommit.getFullMessage();
-					Date date = new Date();
+					Date date = Timestamp.valueOf(dateTime);
 					revCommit = null;
 					revCommit = git.commit().setAmend(true).setMessage(fullMessage)
 							.setAuthor(new PersonIdent(authorIdent, date))

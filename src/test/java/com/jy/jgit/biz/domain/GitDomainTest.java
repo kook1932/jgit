@@ -4,6 +4,7 @@ import org.eclipse.jgit.revwalk.RevCommit;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 class GitDomainTest {
@@ -79,7 +80,7 @@ class GitDomainTest {
 				.branchName("master")
 				.build();
 
-		git.reservation();
+		git.reservation(LocalDateTime.now());
 	}
 
 }
