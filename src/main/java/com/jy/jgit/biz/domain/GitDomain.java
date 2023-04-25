@@ -98,6 +98,14 @@ public class GitDomain {
 	}
 
 	public void reservation(LocalDateTime dateTime) {
+		_reserve(dateTime);
+	}
+
+	public void reservation() {
+		_reserve(null);
+	}
+
+	private void _reserve(LocalDateTime dateTime) {
 		try (Git git = Git.open(getLocalRepoFile())) {
 			if (isPossibleToPush()) {
 				List<RevCommit> localCommitList = getLocalCommitList();
@@ -108,7 +116,7 @@ public class GitDomain {
 					PersonIdent authorIdent = revCommit.getAuthorIdent();
 					PersonIdent committerIdent = revCommit.getCommitterIdent();
 					String fullMessage = revCommit.getFullMessage();
-					Date date = Timestamp.valueOf(dateTime);
+					Date date = Timestamp.valueOf(dateTime == null ? LocalDateTime.now() : dateTime);
 					revCommit = null;
 					revCommit = git.commit().setAmend(true).setMessage(fullMessage)
 							.setAuthor(new PersonIdent(authorIdent, date))

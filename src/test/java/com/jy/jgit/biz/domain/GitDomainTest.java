@@ -80,7 +80,7 @@ class GitDomainTest {
 				.branchName("master")
 				.build();
 
-		git.reservation(LocalDateTime.now());
+		git.reservation();
 	}
 
 }
