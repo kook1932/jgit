@@ -16,26 +16,33 @@ class GitDomainTest {
 				.username("kook1932")
 				.userToken("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")
 				.dirPath("C:\\Projects\\jgit")
-				.repoName("origin")
-				.branchName("master")
 				.build();
 
-		git.push();
+		git.push("origin", "master");
 	}
 
 	@DisplayName("List local commits in a repository")
 	@Test
 	void getLocalCommitList() {
 		GitDomain git = GitDomain.builder()
-				.username("kook1932")
-				.userToken("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")
-				.dirPath("C:\\Projects\\jgit")
-				.repoName("origin")
-				.branchName("master")
+//				.dirPath("C:\\Projects\\jgit")
+				.dirPath("C:\\Users\\jeongyong.han\\project\\jgit")
 				.build();
 
-		List<RevCommit> commitList = git.getLocalCommitList();
-		commitList.forEach(c -> System.out.println("commit : " + c));
+		List<RevCommit> commitList = git.getLocalCommitList("master");
+		commitList.forEach(c -> System.out.println("commit : " + c.getFullMessage()));
+		System.out.println("localCommit count = " + commitList.size());
+	}
+
+	@DisplayName("List local commits in a repository Without Git init")
+	@Test
+	void getLocalCommitListV2() {
+		GitDomain git = GitDomain.builder()
+				.dirPath("C:\\Users\\jeongyong.han\\project\\jgit")
+				.build();
+
+		List<RevCommit> commitList = git.getLocalCommitList("dev");
+		commitList.forEach(c -> System.out.println("commit : " + c + ", message : " + c.getFullMessage()));
 		System.out.println("localCommit count = " + commitList.size());
 	}
 
@@ -43,15 +50,12 @@ class GitDomainTest {
 	@Test
 	void getRemotesCommitList() {
 		GitDomain git = GitDomain.builder()
-				.username("kook1932")
-				.userToken("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")
-				.dirPath("C:\\Projects\\jgit")
-				.repoName("origin")
-				.branchName("master")
+//				.dirPath("C:\\Projects\\jgit")
+				.dirPath("C:\\Users\\jeongyong.han\\project\\jgit")
 				.build();
 
-		List<RevCommit> commitList = git.getRemotesCommitList();
-		commitList.forEach(c -> System.out.println("commit : " + c));
+		List<RevCommit> commitList = git.getRemotesCommitList("origin/master");
+		commitList.forEach(c -> System.out.println("commit : " + c.getFullMessage()));
 		System.out.println("remotesCommit count = " + commitList.size());
 	}
 
@@ -62,11 +66,9 @@ class GitDomainTest {
 				.username("kook1932")
 				.userToken("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")
 				.dirPath("C:\\Users\\jeongyong.han\\project\\jgit")
-				.repoName("origin")
-				.branchName("master")
 				.build();
 
-		git.checkoutRemoteBranchInNewBranch();
+		git.checkoutRemoteBranchInNewBranch("origin/master", "cherry-branch");
 	}
 
 	@DisplayName("show no push Commits")
@@ -76,11 +78,9 @@ class GitDomainTest {
 				.username("kook1932")
 				.userToken("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")
 				.dirPath("C:\\Projects\\jgit")
-				.repoName("origin")
-				.branchName("master")
 				.build();
 
-		git.reservation();
+		git.reservation(LocalDateTime.now(), "master", "origin/master");
 	}
 
 }
