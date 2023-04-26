@@ -34,7 +34,7 @@ class GitDomainTest {
 				.branchName("master")
 				.build();
 
-		List<RevCommit> commitList = git.getLocalCommitList();
+		List<RevCommit> commitList = git.getLocalCommitList("master");
 		commitList.forEach(c -> System.out.println("commit : " + c));
 		System.out.println("localCommit count = " + commitList.size());
 	}
@@ -50,7 +50,7 @@ class GitDomainTest {
 				.branchName("master")
 				.build();
 
-		List<RevCommit> commitList = git.getRemotesCommitList();
+		List<RevCommit> commitList = git.getRemotesCommitList("origin/master");
 		commitList.forEach(c -> System.out.println("commit : " + c));
 		System.out.println("remotesCommit count = " + commitList.size());
 	}
@@ -80,7 +80,7 @@ class GitDomainTest {
 				.branchName("master")
 				.build();
 
-		git.reservation(LocalDateTime.now());
+		git.reservation(LocalDateTime.now(), "master", "origin/master");
 	}
 
 }

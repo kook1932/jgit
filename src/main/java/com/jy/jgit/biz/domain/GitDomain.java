@@ -58,11 +58,11 @@ public class GitDomain {
 	}
 
 	// List all commits in a repository
-	public List<RevCommit> getLocalCommitList() {
+	public List<RevCommit> getLocalCommitList(String localBranchName) {
 		List<RevCommit> list = new ArrayList<>();
 		try (Git git = Git.open(getLocalRepoFile())) {
 			Iterable<RevCommit> revCommits = git.log()
-					.add(git.getRepository().resolve("master"))
+					.add(git.getRepository().resolve(localBranchName))
 					.call();
 			revCommits.iterator().forEachRemaining(list::add);
 		} catch (Exception e) {
@@ -71,11 +71,11 @@ public class GitDomain {
 		return list;
 	}
 
-	public List<RevCommit> getRemotesCommitList() {
+	public List<RevCommit> getRemotesCommitList(String remoteBranchName) {
 		List<RevCommit> list = new ArrayList<>();
 		try (Git git = Git.open(getLocalRepoFile())) {
 			Iterable<RevCommit> revCommits = git.log()
-					.add(git.getRepository().resolve("remotes/origin/master"))
+					.add(git.getRepository().resolve("remotes/" + remoteBranchName))
 					.call();
 			revCommits.iterator().forEachRemaining(list::add);
 		} catch (Exception e) {
@@ -84,8 +84,8 @@ public class GitDomain {
 		return list;
 	}
 
-	public boolean isPossibleToPush() {
-		return getLocalCommitList().size() - getRemotesCommitList().size() > 0;
+	public boolean isPossibleToPush(String localBranchName, String remoteBranchName) {
+		return getLocalCommitList(localBranchName).size() - getRemotesCommitList(remoteBranchName).size() > 0;
 	}
 
 	public void checkoutRemoteBranchInNewBranch() {
@@ -97,11 +97,11 @@ public class GitDomain {
 		}
 	}
 
-	public void reservation(LocalDateTime dateTime) {
+	public void reservation(LocalDateTime dateTime, String localBranchName, String remoteBranchName) {
 		try (Git git = Git.open(getLocalRepoFile())) {
-			if (isPossibleToPush()) {
-				List<RevCommit> localCommitList = getLocalCommitList();
-				List<RevCommit> noPushCommits = getLocalCommitList().subList(0, localCommitList.size() - getRemotesCommitList().size());
+			if (isPossibleToPush(localBranchName, remoteBranchName)) {
+				List<RevCommit> localCommitList = getLocalCommitList(localBranchName);
+				List<RevCommit> noPushCommits = localCommitList.subList(0, localCommitList.size() - getRemotesCommitList(remoteBranchName).size());
 				noPushCommits.forEach(c -> System.out.println(" = " + c));
 
 				for (RevCommit revCommit : noPushCommits) {
