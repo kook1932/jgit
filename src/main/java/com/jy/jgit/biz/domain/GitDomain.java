@@ -2,6 +2,7 @@ package com.jy.jgit.biz.domain;
 
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.eclipse.jgit.api.CommitCommand;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.lib.PersonIdent;
@@ -17,26 +18,25 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-@Data
+@Data @NoArgsConstructor
 public class GitDomain {
 
 	private String username;
 	private String userToken;
 	private String dirPath;
 
-	private String repoName;
-	private String branchName;
-
 	private CredentialsProvider credentialsProvider;
 
 	@Builder
-	public GitDomain(String username, String userToken, String dirPath, String repoName, String branchName) {
+	public GitDomain(String username, String userToken, String dirPath) {
 		this.username = username;
 		this.userToken = userToken;
 		this.dirPath = dirPath;
-		this.repoName = repoName;
-		this.branchName = branchName;
-		this.credentialsProvider = new UsernamePasswordCredentialsProvider(username, userToken);    // set CredentialsProvider
+
+		// username, userToken 과 함께 생성할때만 CredentialsProvider 를 생성한다.
+		if (username != null && !username.isEmpty() && userToken != null && !userToken.isEmpty()) {
+			this.credentialsProvider = new UsernamePasswordCredentialsProvider(username, userToken);
+		}
 	}
 
 	// dirPath 에 존재하는 File 객체 Return
@@ -44,12 +44,16 @@ public class GitDomain {
 		return new File(dirPath);
 	}
 
-	// git push method
-	public void push() {
+	/**
+	 * Git Push Method
+	 * 	- 현재 커밋들을 remote/branchName 에 push 한다
+	 * 	- push 하기 위해선 username, userToken, dirPath 으로 객체 생성이 필요함
+ 	 */
+	public void push(String remote, String branchName) {
 		try (Git git = Git.open(getLocalRepoFile())) {
 			git.push()
 					.setCredentialsProvider(credentialsProvider)
-					.setRemote(repoName)
+					.setRemote(remote)
 					.setRefSpecs(new RefSpec(branchName))
 					.call();
 		} catch (Exception e) {
@@ -88,10 +92,10 @@ public class GitDomain {
 		return getLocalCommitList(localBranchName).size() - getRemotesCommitList(remoteBranchName).size() > 0;
 	}
 
-	public void checkoutRemoteBranchInNewBranch() {
+	public void checkoutRemoteBranchInNewBranch(String remoteBranchName, String newBranchName) {
 		try (Git git = Git.open(getLocalRepoFile())) {
-			git.getRepository().resolve("remotes/origin/master");
-			git.checkout().setCreateBranch(true).setName("cherry-branch").call();
+			git.getRepository().resolve("remotes" + remoteBranchName);
+			git.checkout().setCreateBranch(true).setName(newBranchName).call();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
