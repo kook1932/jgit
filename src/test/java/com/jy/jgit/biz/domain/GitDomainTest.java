@@ -83,4 +83,19 @@ class GitDomainTest {
 		git.reservation(LocalDateTime.now(), "master", "origin/master");
 	}
 
+	@DisplayName("마지막 커밋 조회")
+	@Test
+	public void getCountNotCommit() throws Exception {
+	    // given
+		GitDomain git = GitDomain.builder()
+				.dirPath("D:\\side\\jgit")
+				.build();
+
+		// when
+		int countNotCommit = git.getCountNotCommit();
+
+		// then
+		System.out.println("countNotCommit = " + countNotCommit);
+	}
+
 }
