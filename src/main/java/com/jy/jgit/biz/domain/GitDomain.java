@@ -102,6 +102,10 @@ public class GitDomain {
 		return getLocalCommitList(localBranchName).size() - getRemotesCommitList(remoteBranchName).size() > 0;
 	}
 
+	public int getNoPushCommitsCount(String localBranchName, String remoteBranchName) {
+		return getLocalCommitList(localBranchName).size() - getRemotesCommitList(remoteBranchName).size();
+	}
+
 	public void checkoutRemoteBranchInNewBranch(String remoteBranchName, String newBranchName) {
 		try (Git git = Git.open(getLocalRepoFile())) {
 			git.getRepository().resolve("remotes" + remoteBranchName);
