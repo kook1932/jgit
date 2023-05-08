@@ -108,11 +108,15 @@ public class GitDomain {
 				List<RevCommit> noPushCommits = localCommitList.subList(0, localCommitList.size() - getRemotesCommitList(remoteBranchName).size());
 				noPushCommits.forEach(c -> System.out.println(" = " + c));
 
-				for (RevCommit revCommit : noPushCommits) {
+				for (int i = 0; i < noPushCommits.size(); i++) {
+					RevCommit revCommit = noPushCommits.get(i);
+					LocalDateTime afterDateTime = dateTime.plusDays(i);
+
 					PersonIdent authorIdent = revCommit.getAuthorIdent();
 					PersonIdent committerIdent = revCommit.getCommitterIdent();
 					String fullMessage = revCommit.getFullMessage();
-					Date date = Timestamp.valueOf(dateTime);
+					Date date = Timestamp.valueOf(afterDateTime);
+
 					revCommit = null;
 					revCommit = git.commit().setAmend(true).setMessage(fullMessage)
 							.setAuthor(new PersonIdent(authorIdent, date))
