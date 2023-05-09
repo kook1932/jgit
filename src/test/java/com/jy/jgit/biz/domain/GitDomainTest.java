@@ -98,4 +98,19 @@ class GitDomainTest {
 		System.out.println("countNotCommit = " + countNotCommit);
 	}
 
+	@DisplayName("리모트에 푸시안된 커밋 개수")
+	@Test
+	public void getNoPushCommitsCountTest() throws Exception {
+	    //given
+		GitDomain git = GitDomain.builder()
+				.dirPath("D:\\side\\jgit")
+				.build();
+
+	    //when
+		int count = git.getNoPushCommitsCount("master", "origin/master");
+
+		//then
+		System.out.println("count = " + count);
+	}
+
 }
