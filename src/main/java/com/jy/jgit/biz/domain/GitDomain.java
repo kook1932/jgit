@@ -3,7 +3,7 @@ package com.jy.jgit.biz.domain;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.eclipse.jgit.api.CommitCommand;
+import lombok.extern.slf4j.Slf4j;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.lib.PersonIdent;
 import org.eclipse.jgit.revwalk.RevCommit;
@@ -13,11 +13,16 @@ import org.eclipse.jgit.transport.UsernamePasswordCredentialsProvider;
 
 import java.io.File;
 import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.Period;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+@Slf4j
 @Data @NoArgsConstructor
 public class GitDomain {
 
@@ -45,8 +50,8 @@ public class GitDomain {
 	}
 
 	/**
-	 * Git Push Method
-	 * 	- 현재 커밋들을 remote/branchName 에 push 한다
+	 * Git Push Method<br>
+	 * 	- 현재 커밋들을 remote/branchName 에 push 한다<br>
 	 * 	- push 하기 위해선 username, userToken, dirPath 으로 객체 생성이 필요함
  	 */
 	public void push(String remote, String branchName) {
@@ -75,6 +80,11 @@ public class GitDomain {
 		return list;
 	}
 
+	/**
+	 * Remote 에 Push 된 Commits 조회
+	 * @param remoteBranchName(ex. orgin/master)
+	 * @return List<RevCommit>
+	 */
 	public List<RevCommit> getRemotesCommitList(String remoteBranchName) {
 		List<RevCommit> list = new ArrayList<>();
 		try (Git git = Git.open(getLocalRepoFile())) {
@@ -106,7 +116,7 @@ public class GitDomain {
 			if (isPossibleToPush(localBranchName, remoteBranchName)) {
 				List<RevCommit> localCommitList = getLocalCommitList(localBranchName);
 				List<RevCommit> noPushCommits = localCommitList.subList(0, localCommitList.size() - getRemotesCommitList(remoteBranchName).size());
-				noPushCommits.forEach(c -> System.out.println(" = " + c));
+				noPushCommits.forEach(c -> log.info("no Push Commit : {}", c));
 
 				for (int i = 0; i < noPushCommits.size(); i++) {
 					RevCommit revCommit = noPushCommits.get(i);
@@ -124,11 +134,37 @@ public class GitDomain {
 							.call();
 				}
 			} else {
-				System.out.println("no commits not pushed");
+				log.error("no commits not pushed");
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+	}
+
+	/**
+	 * 리모트 브랜치에 푸시된 마지막 커밋 날짜로부터 금일까지 필요한 커밋의 개수 조회
+	 * @return 필요한 커밋 개수(int)
+	 */
+	public int getCountNotCommit() {
+		// Remote Commit List 조회
+		List<RevCommit> remotesCommitList = getRemotesCommitList("origin/master");
+		int days = 0;
+
+		// 가장 최근 푸시된 커밋의 날짜 조회
+		if (!remotesCommitList.isEmpty()) {
+			PersonIdent authorIdent = remotesCommitList.get(0).getAuthorIdent();
+
+			SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+			log.info("last commit time : {}", dateFormat.format(authorIdent.getWhen()));
+
+			LocalDate nowLocalDate = LocalDate.now();
+			LocalDate lastCommitDate = LocalDate.ofInstant(authorIdent.getWhen().toInstant(), ZoneId.systemDefault());
+
+			// 오늘 날짜와 비교하여 일수 계산하여 return
+			days = Period.between(lastCommitDate, nowLocalDate).getDays();
+		}
+
+		return days;
 	}
 
 }
