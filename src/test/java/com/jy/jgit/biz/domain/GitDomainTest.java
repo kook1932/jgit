@@ -14,7 +14,6 @@ class GitDomainTest {
 	void gitPushTest() {
 		GitDomain git = GitDomain.builder()
 				.username("kook1932")
-				.userToken("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")
 				.dirPath("C:\\Projects\\jgit")
 				.build();
 
@@ -63,8 +62,6 @@ class GitDomainTest {
 	@Test
 	void checkoutRemoteBranchInNewBranchTest() {
 		GitDomain git = GitDomain.builder()
-				.username("kook1932")
-				.userToken("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")
 				.dirPath("C:\\Users\\jeongyong.han\\project\\jgit")
 				.build();
 
@@ -75,8 +72,6 @@ class GitDomainTest {
 	@Test
 	void reservationTest() {
 		GitDomain git = GitDomain.builder()
-				.username("kook1932")
-				.userToken("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")
 				.dirPath("C:\\Projects\\jgit")
 				.build();
 
