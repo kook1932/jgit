@@ -1,11 +1,12 @@
 package com.jy.jgit.biz.service;
 
 import org.springframework.http.RequestEntity;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.net.URI;
-import java.util.Map;
 
 @Service
 public class JgitService {
@@ -25,36 +26,25 @@ public class JgitService {
 
 		RequestEntity<String> requestEntity = RequestEntity
 				.post(uri)
+				.header("content-type", "application/json")
 				.header("Authorization", "bearer " + token)
 				.body(_getAllContributesQuery(username));
 
+		try {
+			RestTemplate restTemplate = new RestTemplate();
+			ResponseEntity<String> exchange = restTemplate.exchange(requestEntity, String.class);
+			System.out.println("exchange = " + exchange);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 
 		return 0;
 	}
 
 	private String _getAllContributesQuery(String username) {
 		return "{\n" +
-				"        \"query\": query {\n" +
-				"            user(login: \"" + username + "\") {\n" +
-				"              name\n" +
-				"              contributionsCollection {\n" +
-				"                contributionCalendar {\n" +
-				"                  colors\n" +
-				"                  totalContributions\n" +
-				"                  weeks {\n" +
-				"                    contributionDays {\n" +
-				"                      color\n" +
-				"                      contributionCount\n" +
-				"                      date\n" +
-				"                      weekday\n" +
-				"                    }\n" +
-				"                    firstDay\n" +
-				"                  }\n" +
-				"                }\n" +
-				"              }\n" +
-				"            }\n" +
-				"          }\n" +
-				"    }";
+				"\"query\": \"query { user(login: \"" + username + "\") { name contributionsCollection { contributionCalendar { colors totalContributions weeks { contributionDays { color contributionCount date weekday } firstDay } } } }}\"\n" +
+				"}";
 	}
 
 }
