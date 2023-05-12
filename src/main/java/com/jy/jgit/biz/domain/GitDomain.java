@@ -120,11 +120,12 @@ public class GitDomain {
 			if (isPossibleToPush(localBranchName, remoteBranchName)) {
 				List<RevCommit> localCommitList = getLocalCommitList(localBranchName);
 				List<RevCommit> noPushCommits = localCommitList.subList(0, localCommitList.size() - getRemotesCommitList(remoteBranchName).size());
-				noPushCommits.forEach(c -> log.info("no Push Commit : {}", c));
+				noPushCommits.forEach(c -> log.info("no Push Commit : {}", c.getFullMessage()));
 
-				for (int i = 0; i < noPushCommits.size(); i++) {
+				for (int i = noPushCommits.size() - 1; i >=  0; i--) {
 					RevCommit revCommit = noPushCommits.get(i);
-					LocalDateTime afterDateTime = dateTime.plusDays(i);
+					LocalDateTime afterDateTime = dateTime.plusDays(noPushCommits.size() - i + 1);
+					System.out.println("afterDateTime = " + afterDateTime);
 
 					PersonIdent authorIdent = revCommit.getAuthorIdent();
 					PersonIdent committerIdent = revCommit.getCommitterIdent();

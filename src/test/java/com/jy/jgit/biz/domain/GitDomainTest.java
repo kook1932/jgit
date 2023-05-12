@@ -72,10 +72,12 @@ class GitDomainTest {
 	@Test
 	void reservationTest() {
 		GitDomain git = GitDomain.builder()
-				.dirPath("C:\\Projects\\jgit")
+//				.dirPath("C:\\Projects\\jgit")
+				.dirPath("D:\\side\\jgit")
 				.build();
 
-		git.reservation(LocalDateTime.now(), "master", "origin/master");
+//		git.reservation(LocalDateTime.now(), "master", "origin/master");
+		git.reservation(LocalDateTime.of(2023, 5, 5, 10, 24), "master", "origin/master");
 	}
 
 	@DisplayName("마지막 커밋 조회")
