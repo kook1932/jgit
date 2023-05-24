@@ -37,10 +37,11 @@ class GitDomainTest {
 	@Test
 	void getLocalCommitListV2() {
 		GitDomain git = GitDomain.builder()
-				.dirPath("C:\\Users\\jeongyong.han\\project\\jgit")
+//				.dirPath("C:\\Users\\jeongyong.han\\project\\jgit")
+				.dirPath("D:\\side\\jgit")
 				.build();
 
-		List<RevCommit> commitList = git.getLocalCommitList("dev");
+		List<RevCommit> commitList = git.getLocalCommitList("master");
 		commitList.forEach(c -> System.out.println("commit : " + c + ", message : " + c.getFullMessage()));
 		System.out.println("localCommit count = " + commitList.size());
 	}
@@ -83,7 +84,7 @@ class GitDomainTest {
 	@DisplayName("마지막 커밋 조회")
 	@Test
 	public void getCountNotCommit() throws Exception {
-	    // given
+		// given
 		GitDomain git = GitDomain.builder()
 				.dirPath("D:\\side\\jgit")
 				.build();
@@ -98,16 +99,30 @@ class GitDomainTest {
 	@DisplayName("리모트에 푸시안된 커밋 개수")
 	@Test
 	public void getNoPushCommitsCountTest() throws Exception {
-	    //given
+		//given
 		GitDomain git = GitDomain.builder()
 				.dirPath("D:\\side\\jgit")
 				.build();
 
-	    //when
+		//when
 		int count = git.getNoPushCommitsCount("master", "origin/master");
 
 		//then
 		System.out.println("count = " + count);
 	}
 
+	@DisplayName("커밋 rebase")
+	@Test
+	public void rebaseCommitDate() throws Exception {
+	    //given
+		GitDomain git = GitDomain.builder()
+				.dirPath("D:\\side\\jgit")
+				.build();
+
+	    //when
+		int commitCount = git.rebaseCommitDate(LocalDateTime.of(2023, 4, 27, 10, 24), "master", "origin/master");
+
+		//then
+		System.out.println("commitCount = " + commitCount);
+	}
 }
