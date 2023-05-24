@@ -5,11 +5,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.jgit.api.Git;
-import org.eclipse.jgit.api.RebaseCommand;
-import org.eclipse.jgit.api.RebaseResult;
-import org.eclipse.jgit.errors.IllegalTodoFileModification;
 import org.eclipse.jgit.lib.PersonIdent;
-import org.eclipse.jgit.lib.RebaseTodoLine;
 import org.eclipse.jgit.revwalk.RevCommit;
 import org.eclipse.jgit.transport.CredentialsProvider;
 import org.eclipse.jgit.transport.RefSpec;
@@ -23,11 +19,8 @@ import java.time.LocalDateTime;
 import java.time.Period;
 import java.time.ZoneId;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
-
-import static org.eclipse.jgit.api.RebaseCommand.*;
 
 @Slf4j
 @Data @NoArgsConstructor
@@ -151,73 +144,6 @@ public class GitDomain {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-	}
-
-	public int rebaseCommitDate(LocalDateTime dateTime, String localBranchName, String remoteBranchName) {
-		if (isPossibleToPush(localBranchName, remoteBranchName)) {
-			// local commit logs
-			List<RevCommit> localCommitList = getLocalCommitList(localBranchName);
-
-			// origin/master 에 push 되지 않은 commits
-			List<RevCommit> noPushCommits = localCommitList.subList(0, localCommitList.size() - getRemotesCommitList(remoteBranchName).size());
-			Collections.reverse(noPushCommits);
-			noPushCommits.forEach(c -> log.info("no Push Commit : {}", c.getFullMessage()));
-
-			try (Git git = Git.open(getLocalRepoFile())) {
-				InteractiveHandler handler = new InteractiveHandler() {
-					@Override
-					public void prepareSteps(List<RebaseTodoLine> steps) {
-						// the handler receives the list of commits that are rebased, i.e. the ones on the local branch
-						for(RebaseTodoLine step : steps) {
-							// for each step, you can decide which action should be taken
-							// default is PICK
-							try {
-								// by selecting "EDIT", the rebase will stop and ask you to edit the commit-contents
-								step.setAction(RebaseTodoLine.Action.EDIT);
-							} catch (IllegalTodoFileModification e) {
-								throw new IllegalStateException(e);
-							}
-						}
-					}
-
-					@Override
-					public String modifyCommitMessage(String oldMessage) {
-						return oldMessage;
-					}
-				};
-
-				// git rebase 수행
-				System.out.println("noPushCommits.get(0).getName() = " + noPushCommits.get(0).getName());
-				RebaseResult result = git.rebase().setUpstream(noPushCommits.get(0).getName()).runInteractively(handler).call();
-
-				for (int i = 0; i < noPushCommits.size(); i++) {
-					RevCommit revCommit = noPushCommits.get(i);
-					LocalDateTime afterDateTime = dateTime.plusDays(i);
-					System.out.println("afterDateTime = " + afterDateTime);
-
-					PersonIdent authorIdent = revCommit.getAuthorIdent();
-					PersonIdent committerIdent = revCommit.getCommitterIdent();
-					String fullMessage = revCommit.getFullMessage();
-
-					Date date = Timestamp.valueOf(afterDateTime);
-					PersonIdent newAuthor = new PersonIdent(authorIdent, date);
-					PersonIdent bewCommitterIdent = new PersonIdent(committerIdent, date);
-
-					revCommit = null;
-					revCommit = git.commit().setAmend(true).setMessage(fullMessage)
-							.setAuthor(newAuthor)
-							.setAuthor(bewCommitterIdent)
-							.call();
-
-				}
-
-
-			} catch (Exception e) {
-				log.error("error : {}", e.getMessage());
-			}
-
-			return noPushCommits.size();
-		} else return 0;
 	}
 
 	/**
